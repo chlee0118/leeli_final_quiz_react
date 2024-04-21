@@ -62,6 +62,22 @@ export default function QuizEditor({
     }
   };
 
+  const handleSaveAndPublish = async () => {
+    try {
+        await handleSave();
+        const updatedQuiz = { ...quizData, published: true };
+
+        await client.updateQuiz(updatedQuiz);
+        setParentQuiz(prevQuizzes =>
+            prevQuizzes.map(q => (q._id === updatedQuiz._id ? updatedQuiz : q))
+        );
+        navigate(`/Kanbas/Courses/${courseId}/Quizzes`, { replace: true });
+    } catch (error) {
+        console.error("Failed to save or publish quiz:", error);
+        alert("Failed to save or publish quiz.");
+    }
+};
+
   const handleCancel = () => {
     navigate(`/Kanbas/Courses/${courseId}/Quizzes`, { replace: true });
   };
@@ -427,8 +443,8 @@ export default function QuizEditor({
       <button className="btn btn-success" style={{marginRight:10}} onClick={handleSave}>
         Save
       </button>
-      <button className="btn btn-secondary"style={{marginRight:10}}  onClick={handlePreview}>
-        Preview
+      <button className="btn btn-secondary"style={{marginRight:10}}  onClick={handleSaveAndPublish}>
+        Save & Publish
       </button>
       <button className="btn btn-danger" onClick={handleCancel}>
         Cancel
